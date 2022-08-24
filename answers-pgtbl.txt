@@ -1,0 +1,5 @@
+1. All syscalls that ask for a readonly value, and doesn't do actual change to the kernel.
+One syscall I found is uptime(). We can make a physical page only consists of `ticks`, and update this page whenever `ticks` changes. Then every time we acquire uptime(), we return the answer in that page.
+
+2. Page0 includes text of _init. Page2 is the stack page for _init. Since Page1 is the stack guard, then they are not accessible by the user.
+The third page to last page are "heap data".

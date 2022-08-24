@@ -432,3 +432,59 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+void
+vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n",pagetable);
+  for(int i = 0; i < 512; i++)
+  {
+    pte_t pte = pagetable[i];
+    pagetable_t pgtbl2 = (void *)PTE2PA(pte);
+    if (pte & PTE_V)
+    {
+      printf(" ..%d: pte %p pa %p\n", i, pte, pgtbl2);
+      for (int j = 0; j < 512; j++)
+      {
+        pte_t pte = pgtbl2[j];
+        pagetable_t pgtbl3 = (void *)PTE2PA(pte);
+        if (pte & PTE_V)
+        {
+          printf(" .. ..%d: pte %p pa %p\n", j, pte, pgtbl3);
+          for (int k = 0; k < 512; k++)
+          {
+            pte_t pte = pgtbl3[k];
+            if (pte & PTE_V)
+              printf(" .. .. ..%d: pte %p pa %p\n", k, pte, PTE2PA(pte));
+          }
+        }
+      }
+    }
+  }
+}
+
+void
+vawalk(pagetable_t pagetable, uint64 va, int npages, char* buffer)
+{
+  pte_t* pte;
+  uint64 cnt = 0;
+  for (char *cur = buffer; npages; npages--, va += PGSIZE)
+  {
+    if (cnt == 0) *cur = 0;
+    if (va >= MAXVA) break;
+    if ((pte = walk(pagetable, va, 0)) == 0)
+      continue;
+    if (*pte & PTE_A)
+    {
+      *cur |= 1 << cnt;
+      *pte &= ~PTE_A;
+    }
+    cnt++;
+    if (cnt == 8 * sizeof(*cur))
+    {
+      cnt = 0;
+      cur++;
+    }
+  }
+  printf("\n");
+}
