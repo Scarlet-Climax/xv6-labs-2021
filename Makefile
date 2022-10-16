@@ -1,9 +1,5 @@
 
-<<<<<<< HEAD
-# To compile and run with a lab solution, set the lab name in lab.mk
-=======
 # To compile and run with a lab solution, set the lab name in conf/lab.mk
->>>>>>> c826bd8176c764a7ae385ba6567afc0cd91cfc69
 # (e.g., LAB=util).  Run make grade to test solution with the lab's
 # grade script (e.g., grade-lab-util).
 
