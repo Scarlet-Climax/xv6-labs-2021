@@ -1,0 +1,2 @@
+If two threads got the same list head at the same time. Two new node will set the head as their successor, but the latter one will become the new head. 
+This results in the first node missing.
